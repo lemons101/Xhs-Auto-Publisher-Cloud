@@ -1,0 +1,18 @@
+[Unit]
+Description=XHS Auto Publisher Cloud
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/projects/xhs-auto-publisher-cloud
+EnvironmentFile=-/root/projects/xhs-auto-publisher-cloud/.env
+ExecStart=/root/projects/xhs-auto-publisher-cloud/deploy/run_with_xvfb.sh /root/projects/xhs-auto-publisher-cloud/examples/openclaw_business_content.json
+Restart=no
+TimeoutStartSec=900
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
