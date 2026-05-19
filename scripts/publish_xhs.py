@@ -72,7 +72,12 @@ async def async_main() -> int:
 
     result: dict[str, object]
     try:
-        async with BrowserSession(profile_dir=profile_dir, headless=args.headless) as session:
+        async with BrowserSession(
+            profile_dir=profile_dir,
+            headless=args.headless,
+            audit=audit,
+            debug_url_keywords=["publish", "note", "submit", "save", "draft", "topic", "activity", "creator"],
+        ) as session:
             publisher = XhsPublisher(
                 page=session.page,
                 app_config=app_config,
