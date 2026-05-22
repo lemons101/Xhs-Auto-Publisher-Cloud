@@ -37,7 +37,7 @@ GitHub 仓库
 在飞书中发送：
 
 ```text
-@檬爪一号🦞 你现在帮我部署一个 Skill 到云服务器。
+你现在帮我部署一个 Skill 到云服务器。
 
 目标仓库：
 GitHub - lemons101/Xhs-Auto-Publisher-Cloud
