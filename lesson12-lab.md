@@ -1,4 +1,4 @@
-# Lesson 12 Lab: XHS Auto Publisher Cloud 部署任务卡
+# 第 12 节 实验手册：: 小红书笔记自动化发布
 
 下面这段可以直接复制粘贴给龙虾执行。
 
