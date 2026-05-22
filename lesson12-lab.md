@@ -1,6 +1,40 @@
-# 第 12 节 实验手册：: 小红书笔记自动化发布
+# 第 12 节实验手册：云端部署小红书自动发布 Skill
 
-下面这段可以直接复制粘贴给龙虾执行。
+## 实验目标
+
+1. 理解小红书自动发布 Skill 的云端最小可运行链路：生成登录二维码截图 -> 生成 payload -> 交给龙虾转发到飞书群。
+2. 掌握在 Ubuntu 服务器上部署 Agent 工具项目的基本流程：拉取仓库、安装系统依赖、初始化 `.venv`、安装 Playwright Chromium。
+3. 用 `MODE=draft` 完成安全验证，跑通登录二维码生成流程，但不触发真实内容发布。
+4. 验证运行产物是否完整生成：`login_qr.png` 和 `login_qr.payload.json`。
+5. 明确本实验的边界：先跑通手动验证，不配置 nginx、不配置 systemd、不做公网二维码访问。
+
+## 实验背景
+
+这一节我们要把本地的小红书自动发布能力放到云服务器上运行。
+
+但这次不是为了直接发布笔记，而是为了验证一条更基础、更安全的云端协作链路：
+
+```text
+云服务器启动 Skill
+-> 小红书创作者平台要求扫码登录
+-> Skill 生成二维码截图
+-> Skill 生成 lobster notify payload
+-> 后续由龙虾把二维码图片发到飞书群
+-> 人工扫码继续后续流程
+```
+
+所以，本实验的成功标准不是“发布成功”，而是：
+
+- 云端项目能跑起来
+- 虚拟浏览器能启动
+- 小红书登录二维码能截图
+- 通知 payload 能生成
+
+只要二维码和 payload 都出现，就说明这一节的部署验证已经完成。
+
+## 直接复制给龙虾的任务卡
+
+下面这一整段可以直接复制粘贴给龙虾执行。
 
 ```text
 @檬爪一号🦞 你现在帮我部署一个 Skill 到云服务器。
@@ -62,9 +96,9 @@ https://github.com/lemons101/Xhs-Auto-Publisher-Cloud
 回给我，等待我下一步处理。
 ```
 
-## 给龙虾执行时可用的命令清单
+## 执行命令清单
 
-如果龙虾需要明确命令，就按下面这些命令逐步执行并逐步回报。
+如果龙虾需要明确命令，就按下面这些命令逐步执行，并在每一步后回报执行结果。
 
 ### 1. 拉取仓库
 
@@ -96,7 +130,7 @@ cd /root/projects/xhs-auto-publisher-cloud
 bash deploy/bootstrap_project.sh
 ```
 
-检查：
+检查初始化结果：
 
 ```bash
 cd /root/projects/xhs-auto-publisher-cloud
@@ -112,16 +146,24 @@ cd /root/projects/xhs-auto-publisher-cloud
 cp deploy/env.example .env
 ```
 
-### 5. 设置 MODE=draft
+### 5. 设置 `MODE=draft`
 
 ```bash
 cd /root/projects/xhs-auto-publisher-cloud
+
 if grep -q '^MODE=' .env; then
   sed -i 's/^MODE=.*/MODE=draft/' .env
 else
   printf '\nMODE=draft\n' >> .env
 fi
+
 grep '^MODE=' .env
+```
+
+期望输出：
+
+```text
+MODE=draft
 ```
 
 ### 6. 执行手动测试
@@ -130,6 +172,8 @@ grep '^MODE=' .env
 cd /root/projects/xhs-auto-publisher-cloud
 bash deploy/run_with_xvfb.sh
 ```
+
+注意：这一步如果跑到扫码登录阶段，不要继续扫码，不要配置 systemd，也不要发布内容。只检查二维码截图和 payload 是否生成。
 
 ### 7. 检查二维码截图和 payload
 
@@ -182,3 +226,12 @@ payload 文件路径:
 当前卡点:
 <一句话说明卡在哪里>
 ```
+
+## 本实验不要做的事
+
+- 不要配置 nginx。
+- 不要配置 systemd。
+- 不要配置 `XHS_PUBLIC_RUNTIME_BASE_URL`。
+- 不要真实发布小红书内容。
+- 不要删除仓库文档和示例文件。
+- 不要为了绕过扫码、滑块、验证码或平台风控而修改逻辑。
